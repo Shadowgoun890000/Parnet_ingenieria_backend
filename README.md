@@ -2,49 +2,6 @@
 📋 Descripción General
 
 Sistema backend completo para Parnet Ingeniería S.A. de C.V. desarrollado en Flask, que gestiona productos, servicios, clientes, noticias y contactos con autenticación JWT, generación de PDFs, envío de emails y dashboard administrativo.
-🏗️ Estructura del Proyecto
-
-📁 Arquitectura de Archivos
-text
-
-ParnetIngenieria/
-├── 📄 app.py                          # Aplicación principal Flask
-├── 📄 run.py                          # Script de ejecución
-├── 📄 requirements.txt                # Dependencias del proyecto
-├── 📄 init_database.py               # Inicialización de BD
-├── 📄 seed_database.py               # Poblado de datos iniciales
-├── 📄 check_database.py              # Verificación de BD
-├── 📄 check_structure.py             # Verificación de estructura
-├── 📄 crear_admin.py                 # Creación de administrador
-│
-├── 📁 Config/
-│   └── 📄 config.py                  # Configuración de la app
-│
-├── 📁 DataBase/
-│   └── 📁 models/
-│       ├── 📄 __init__.py            # Inicialización de modelos
-│       ├── 📄 database.py            # Configuración BD y modelo base
-│       ├── 📄 administrador.py       # Modelo de administradores
-│       ├── 📄 producto.py            # Modelo de productos
-│       ├── 📄 servicio.py            # Modelo de servicios
-│       ├── 📄 cliente.py             # Modelo de clientes
-│       ├── 📄 contacto.py            # Modelo de contactos
-│       └── 📄 noticia.py             # Modelo de noticias
-│
-├── 📁 Routes/
-│   ├── 📄 __init__.py
-│   ├── 📄 auth.py                    # Rutas de autenticación
-│   ├── 📄 productos.py               # Rutas de productos
-│   ├── 📄 servicios.py               # Rutas de servicios
-│   ├── 📄 dashboard.py               # Rutas del dashboard
-│   ├── 📄 contactos.py               # Rutas de contactos
-│   └── 📄 public.py                  # Rutas públicas
-│
-└── 📁 Utils/
-    ├── 📄 __init__.py                # Exportación de utilidades
-    ├── 📄 email_sender.py            # Sistema de envío de emails
-    ├── 📄 pdf_generator.py           # Generador de PDFs
-    └── 📄 singleton.py               # Patrón Singleton para estadísticas
 
 🎯 Funcionalidades Principales
 🔐 Sistema de Autenticación
