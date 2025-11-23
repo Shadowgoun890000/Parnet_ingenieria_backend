@@ -1,0 +1,18 @@
+# Entornos
+.venv/
+venv/
+env/
+
+# Python compiled
+__pycache__/
+*.pyc
+
+# Config
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Otros
+query
