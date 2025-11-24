@@ -1,5 +1,6 @@
 from . import db, BaseModel
 
+
 class Servicio(BaseModel):
     __tablename__ = 'servicios'
 
@@ -17,6 +18,7 @@ class Servicio(BaseModel):
         data = super().to_dict()
         data['total_solicitudes'] = len(self.solicitudes)
         return data
+
 
 class SolicitudServicio(BaseModel):
     __tablename__ = 'solicitudes_servicios'

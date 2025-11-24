@@ -91,14 +91,14 @@ async function enviarSolicitudServicio(event) {
         return;
     }
 
-    const payload = {
-        servicio_id: serviceForm.servicio_id.value,
-        nombre_cliente: serviceForm.nombre_contacto.value.trim(),
-        email: serviceForm.email_contacto.value.trim(),
-        telefono: serviceForm.telefono_contacto.value.trim(),
-        empresa: serviceForm.empresa.value.trim(),
-        mensaje: serviceForm.detalle.value.trim()
-    };
+   const payload = {
+    servicio_id: serviceForm.servicio_id.value,
+    nombre_cliente: serviceForm.nombre_cliente.value.trim(),  // ← Coincide con el modelo
+    email: serviceForm.email.value.trim(),                    // ← Coincide con el modelo
+    telefono: serviceForm.telefono.value.trim(),              // ← Coincide con el modelo
+    empresa: serviceForm.empresa.value.trim(),
+    mensaje: serviceForm.mensaje.value.trim()                 // ← Coincide con el modelo
+};
 
     try {
         const resp = await fetch(`/api/servicios/solicitudes`, {

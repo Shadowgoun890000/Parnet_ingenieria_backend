@@ -16,7 +16,7 @@ def crear_solicitud_servicio():
         data = request.get_json()
 
         # Validaciones
-        required_fields = ['servicio_id', 'nombre_contacto', 'email_contacto', 'detalle']
+        required_fields = ['servicio_id', 'nombre_cliente', 'email', 'mensaje']
         for field in required_fields:
             if not data.get(field):
                 return jsonify({
@@ -32,15 +32,21 @@ def crear_solicitud_servicio():
                 'error': 'Servicio no encontrado'
             }), 404
 
+        # ✅ CORREGIDO: Usar campos que coinciden con el modelo
         solicitud = SolicitudServicio(
             servicio_id=data['servicio_id'],
-            nombre_contacto=data['nombre_contacto'],
-            email_contacto=data['email_contacto'],
-            telefono_contacto=data.get('telefono_contacto'),
+            nombre_cliente=data['nombre_cliente'],  # ← Campo del modelo
+            email=data['email'],                    # ← Campo del modelo
+            telefono=data.get('telefono'),
             empresa=data.get('empresa'),
+            mensaje=data['mensaje'],                # ← Campo del modelo
+            estado='pendiente',
+            # Campos de compatibilidad
+            nombre_contacto=data.get('nombre_cliente'),
+            email_contacto=data.get('email'),
+            telefono_contacto=data.get('telefono'),
             area_servicio=data.get('area_servicio'),
-            detalle=data['detalle'],
-            estado='pendiente'
+            detalle=data.get('mensaje')
         )
 
         db.session.add(solicitud)
@@ -58,8 +64,8 @@ def crear_solicitud_servicio():
             'solicitud': {
                 'id': solicitud.id,
                 'servicio_id': solicitud.servicio_id,
-                'nombre_contacto': solicitud.nombre_contacto,
-                'email_contacto': solicitud.email_contacto,
+                'nombre_cliente': solicitud.nombre_cliente,
+                'email': solicitud.email,
                 'estado': solicitud.estado
             }
         }), 201
@@ -67,7 +73,6 @@ def crear_solicitud_servicio():
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
-
 
 @servicios_bp.route('/solicitudes', methods=['GET'])
 @jwt_required()
