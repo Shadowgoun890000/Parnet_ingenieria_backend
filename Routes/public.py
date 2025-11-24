@@ -19,30 +19,45 @@ def get_productos_public():
         categoria_id = request.args.get('categoria_id', type=int)
         destacado = request.args.get('destacado', type=bool)
 
-        query = Producto.query.filter_by(activo=True, estatus='disponible')
+        query = Producto.query.filter_by(activo=True)
 
         if search:
             query = query.filter(
                 or_(
                     Producto.nombre.ilike(f'%{search}%'),
-                    Producto.descripcion_corta.ilike(f'%{search}%'),
-                    Producto.sku.ilike(f'%{search}%')
+                    Producto.descripcion_corta.ilike(f'%{search}%')
                 )
             )
 
         if categoria_id:
             query = query.filter_by(categoria_id=categoria_id)
 
-        if destacado is not None:
+        if destacado is not None and hasattr(Producto, 'destacado'):
             query = query.filter_by(destacado=destacado)
 
-        productos = query.order_by(Producto.destacado.desc(), Producto.fecha_creacion.desc()).paginate(
+        productos = query.order_by(Producto.id.desc()).paginate(
             page=page, per_page=per_page, error_out=False
         )
 
+        productos_data = []
+        for prod in productos.items:
+            productos_data.append({
+                'id': prod.id,
+                'nombre': getattr(prod, 'nombre', ''),
+                'descripcion': getattr(prod, 'descripcion', ''),
+                'descripcion_corta': getattr(prod, 'descripcion_corta', ''),
+                'precio': float(getattr(prod, 'precio', 0)),
+                'estatus': getattr(prod, 'estatus', 'disponible'),
+                'imagen_url': getattr(prod, 'imagen_url', ''),
+                'categoria_id': getattr(prod, 'categoria_id', None),
+                'stock': getattr(prod, 'stock', 0),
+                'sku': getattr(prod, 'sku', f'PROD-{prod.id}'),
+                'destacado': getattr(prod, 'destacado', False)
+            })
+
         return jsonify({
             'success': True,
-            'productos': [prod.to_dict() for prod in productos.items],
+            'productos': productos_data,
             'total': productos.total,
             'pages': productos.pages,
             'current_page': page
@@ -58,11 +73,34 @@ def get_producto_public(producto_id):
     try:
         producto = Producto.query.filter_by(
             id=producto_id,
-            activo=True,
-            estatus='disponible'
-        ).first_or_404()
+            activo=True
+        ).first()
 
-        return jsonify({'success': True, 'producto': producto.to_dict()})
+        if not producto:
+            return jsonify({
+                'success': False,
+                'error': 'Producto no encontrado'
+            }), 404
+
+        producto_data = {
+            'id': producto.id,
+            'nombre': getattr(producto, 'nombre', ''),
+            'descripcion': getattr(producto, 'descripcion', ''),
+            'descripcion_corta': getattr(producto, 'descripcion_corta', ''),
+            'precio': float(getattr(producto, 'precio', 0)),
+            'estatus': getattr(producto, 'estatus', 'disponible'),
+            'imagen_url': getattr(producto, 'imagen_url', ''),
+            'categoria_id': getattr(producto, 'categoria_id', None),
+            'stock': getattr(producto, 'stock', 0),
+            'sku': getattr(producto, 'sku', f'PROD-{producto.id}'),
+            'destacado': getattr(producto, 'destacado', False)
+        }
+
+        return jsonify({
+            'success': True,
+            'producto': producto_data
+        })
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -73,15 +111,27 @@ def get_productos_destacados():
     try:
         limit = request.args.get('limit', 6, type=int)
 
-        productos = Producto.query.filter_by(
-            activo=True,
-            estatus='disponible',
-            destacado=True
-        ).order_by(Producto.fecha_creacion.desc()).limit(limit).all()
+        query = Producto.query.filter_by(activo=True)
+
+        if hasattr(Producto, 'destacado'):
+            query = query.filter_by(destacado=True)
+
+        productos = query.order_by(Producto.id.desc()).limit(limit).all()
+
+        productos_data = []
+        for prod in productos:
+            productos_data.append({
+                'id': prod.id,
+                'nombre': getattr(prod, 'nombre', ''),
+                'descripcion_corta': getattr(prod, 'descripcion_corta', ''),
+                'precio': float(getattr(prod, 'precio', 0)),
+                'imagen_url': getattr(prod, 'imagen_url', ''),
+                'destacado': getattr(prod, 'destacado', False)
+            })
 
         return jsonify({
             'success': True,
-            'productos': [prod.to_dict() for prod in productos]
+            'productos': productos_data
         })
 
     except Exception as e:
@@ -92,31 +142,44 @@ def get_productos_destacados():
 def get_categorias_public():
     """Obtener categorías para frontend público"""
     try:
-        categorias = CategoriaProducto.query.filter_by(activo=True).order_by(
-            CategoriaProducto.orden.asc()
-        ).all()
+        categorias = CategoriaProducto.query.filter_by(activo=True).all()
+
+        categorias_data = []
+        for cat in categorias:
+            categorias_data.append({
+                'id': cat.id,
+                'nombre': getattr(cat, 'nombre', ''),
+                'descripcion': getattr(cat, 'descripcion', ''),
+                'activo': getattr(cat, 'activo', True)
+            })
 
         return jsonify({
             'success': True,
-            'categorias': [cat.to_dict() for cat in categorias]
+            'categorias': categorias_data
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-# ==================== SERVICIOS PÚBLICOS ====================
-
-# ==================== SERVICIOS PÚBLICOS ====================
-
 @public_bp.route('/servicios', methods=['GET'])
 def obtener_servicios_publicos():
     """Lista pública de servicios para el frontend"""
     try:
-        servicios = Servicio.query.all()  # si más adelante tienes 'activo', puedes filtrar por eso
+        servicios = Servicio.query.filter_by(activo=True).all()
+
+        servicios_data = []
+        for serv in servicios:
+            servicios_data.append({
+                "id": serv.id,
+                "nombre": getattr(serv, "nombre", ""),
+                "descripcion": getattr(serv, "descripcion", ""),
+                "precio_base": float(getattr(serv, "precio_base", 0)),
+                "activo": getattr(serv, "activo", True)
+            })
 
         return jsonify({
             "success": True,
-            "servicios": [s.to_dict() for s in servicios]
+            "servicios": servicios_data
         }), 200
 
     except Exception as e:
@@ -130,19 +193,24 @@ def obtener_servicios_publicos():
 def get_clientes_public():
     """Obtener clientes para frontend público"""
     try:
-        clientes = Cliente.query.filter_by(activo=True).order_by(
-            Cliente.orden.asc()
-        ).all()
+        clientes = Cliente.query.filter_by(activo=True).all()
+
+        clientes_data = []
+        for cliente in clientes:
+            clientes_data.append({
+                'id': cliente.id,
+                'nombre': getattr(cliente, 'nombre', ''),
+                'logo_url': getattr(cliente, 'logo_url', ''),
+                'activo': getattr(cliente, 'activo', True)
+            })
 
         return jsonify({
             'success': True,
-            'clientes': [cliente.to_dict() for cliente in clientes]
+            'clientes': clientes_data
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
-# ==================== NOTICIAS PÚBLICAS ====================
 
 @public_bp.route('/noticias', methods=['GET'])
 def get_noticias_public():
@@ -151,14 +219,16 @@ def get_noticias_public():
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 6, type=int)
 
-        # Query base: sin asumir campos como 'activa' o 'fecha_publicacion'
         query = Noticia.query
 
-        # Intentar ordenar por fecha_publicacion si existe, si no, por id
+        # Intentar filtrar por activas si existe el campo
+        if hasattr(Noticia, 'activa'):
+            query = query.filter_by(activa=True)
+
+        # Intentar ordenar por fecha
         try:
-            _ = Noticia.fecha_publicacion  # si no existe, lanza AttributeError
             query = query.order_by(Noticia.fecha_publicacion.desc())
-        except Exception:
+        except:
             query = query.order_by(Noticia.id.desc())
 
         noticias_pag = query.paginate(page=page, per_page=per_page, error_out=False)
@@ -167,32 +237,13 @@ def get_noticias_public():
         for n in noticias_pag.items:
             noticias_data.append({
                 "id": getattr(n, "id", None),
-                "titulo": (
-                    getattr(n, "titulo", None)
-                    or getattr(n, "titulo_noticia", None)
-                    or ""
-                ),
-                "resumen": (
-                    getattr(n, "resumen", None)
-                    or getattr(n, "descripcion_corta", None)
-                    or getattr(n, "descripcion", None)
-                    or ""
-                ),
-                "contenido": (
-                    getattr(n, "contenido", None)
-                    or getattr(n, "cuerpo", None)
-                    or getattr(n, "detalle", None)
-                    or getattr(n, "descripcion", None)
-                    or ""
-                ),
+                "titulo": getattr(n, "titulo", "") or getattr(n, "titulo_noticia", ""),
+                "resumen": getattr(n, "resumen", "") or getattr(n, "descripcion_corta", ""),
+                "contenido": getattr(n, "contenido", "") or getattr(n, "cuerpo", ""),
                 "fecha_publicacion": getattr(n, "fecha_publicacion", None),
                 "visitas": getattr(n, "visitas", 0),
-                "autor": (
-                    getattr(n, "autor", None)
-                    or getattr(n, "creado_por", None)
-                ),
-                # Si existe 'activa', lo usamos; si no, asumimos True
-                "activa": getattr(n, "activa", True),
+                "autor": getattr(n, "autor", "") or getattr(n, "creado_por", ""),
+                "imagen_url": getattr(n, "imagen_url", "")
             })
 
         return jsonify({
@@ -209,49 +260,36 @@ def get_noticias_public():
 
 @public_bp.route('/noticias/<int:noticia_id>', methods=['GET'])
 def get_noticia_public(noticia_id):
-    """Obtener noticia específica e incrementar visitas"""
+    """Obtener noticia específica"""
     try:
-        # No asumimos 'activa': solo buscamos por id
-        noticia = Noticia.query.filter_by(id=noticia_id).first_or_404()
+        noticia = Noticia.query.get(noticia_id)
 
-        # Incrementar contador de visitas si el atributo existe
-        try:
-            noticia.visitas = (getattr(noticia, "visitas", 0) or 0) + 1
+        if not noticia:
+            return jsonify({
+                "success": False,
+                "error": "Noticia no encontrada"
+            }), 404
+
+        # Incrementar visitas si el campo existe
+        if hasattr(noticia, 'visitas'):
+            noticia.visitas = getattr(noticia, 'visitas', 0) + 1
             db.session.commit()
-        except Exception:
-            # Si algo falla (no hay columna, etc.), lo ignoramos
-            db.session.rollback()
 
         noticia_data = {
             "id": getattr(noticia, "id", None),
-            "titulo": (
-                getattr(noticia, "titulo", None)
-                or getattr(noticia, "titulo_noticia", None)
-                or ""
-            ),
-            "resumen": (
-                getattr(noticia, "resumen", None)
-                or getattr(noticia, "descripcion_corta", None)
-                or getattr(noticia, "descripcion", None)
-                or ""
-            ),
-            "contenido": (
-                getattr(noticia, "contenido", None)
-                or getattr(noticia, "cuerpo", None)
-                or getattr(noticia, "detalle", None)
-                or getattr(noticia, "descripcion", None)
-                or ""
-            ),
+            "titulo": getattr(noticia, "titulo", "") or getattr(noticia, "titulo_noticia", ""),
+            "resumen": getattr(noticia, "resumen", "") or getattr(noticia, "descripcion_corta", ""),
+            "contenido": getattr(noticia, "contenido", "") or getattr(noticia, "cuerpo", ""),
             "fecha_publicacion": getattr(noticia, "fecha_publicacion", None),
             "visitas": getattr(noticia, "visitas", 0),
-            "autor": (
-                getattr(noticia, "autor", None)
-                or getattr(noticia, "creado_por", None)
-            ),
-            "activa": getattr(noticia, "activa", True),
+            "autor": getattr(noticia, "autor", "") or getattr(noticia, "creado_por", ""),
+            "imagen_url": getattr(noticia, "imagen_url", "")
         }
 
-        return jsonify({"success": True, "noticia": noticia_data})
+        return jsonify({
+            "success": True,
+            "noticia": noticia_data
+        })
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -259,17 +297,18 @@ def get_noticia_public(noticia_id):
 
 @public_bp.route('/noticias/recientes', methods=['GET'])
 def get_noticias_recientes():
-    """Obtener noticias más recientes (para sidebar o home)"""
+    """Obtener noticias más recientes"""
     try:
         limit = request.args.get('limit', 3, type=int)
 
         query = Noticia.query
 
-        # Intentar ordenar por fecha_publicacion; si no, por id
+        if hasattr(Noticia, 'activa'):
+            query = query.filter_by(activa=True)
+
         try:
-            _ = Noticia.fecha_publicacion
             query = query.order_by(Noticia.fecha_publicacion.desc())
-        except Exception:
+        except:
             query = query.order_by(Noticia.id.desc())
 
         noticias = query.limit(limit).all()
@@ -278,11 +317,7 @@ def get_noticias_recientes():
         for n in noticias:
             noticias_data.append({
                 "id": getattr(n, "id", None),
-                "titulo": (
-                    getattr(n, "titulo", None)
-                    or getattr(n, "titulo_noticia", None)
-                    or ""
-                ),
+                "titulo": getattr(n, "titulo", "") or getattr(n, "titulo_noticia", ""),
                 "fecha_publicacion": getattr(n, "fecha_publicacion", None),
                 "visitas": getattr(n, "visitas", 0),
             })
@@ -304,14 +339,17 @@ def search_global():
         limit = request.args.get('limit', 10, type=int)
 
         if not query:
-            return jsonify({'success': False, 'error': 'Término de búsqueda requerido'}), 400
+            return jsonify({
+                'success': False,
+                'error': 'Término de búsqueda requerido'
+            }), 400
 
         # Buscar en productos
-        productos = Producto.query.filter_by(activo=True, estatus='disponible').filter(
+        productos = Producto.query.filter_by(activo=True).filter(
             or_(
                 Producto.nombre.ilike(f'%{query}%'),
                 Producto.descripcion_corta.ilike(f'%{query}%'),
-                Producto.descripcion_larga.ilike(f'%{query}%')
+                Producto.descripcion.ilike(f'%{query}%')
             )
         ).limit(limit).all()
 
@@ -323,11 +361,30 @@ def search_global():
             )
         ).limit(limit).all()
 
+        productos_data = []
+        for prod in productos:
+            productos_data.append({
+                'id': prod.id,
+                'nombre': getattr(prod, 'nombre', ''),
+                'descripcion_corta': getattr(prod, 'descripcion_corta', ''),
+                'precio': float(getattr(prod, 'precio', 0)),
+                'tipo': 'producto'
+            })
+
+        servicios_data = []
+        for serv in servicios:
+            servicios_data.append({
+                'id': serv.id,
+                'nombre': getattr(serv, 'nombre', ''),
+                'descripcion': getattr(serv, 'descripcion', ''),
+                'tipo': 'servicio'
+            })
+
         return jsonify({
             'success': True,
             'resultados': {
-                'productos': [prod.to_dict() for prod in productos],
-                'servicios': [serv.to_dict() for serv in servicios],
+                'productos': productos_data,
+                'servicios': servicios_data,
                 'total_productos': len(productos),
                 'total_servicios': len(servicios)
             }
@@ -342,17 +399,14 @@ def get_info_empresa():
     """Información básica de la empresa para el frontend"""
     try:
         info = {
-            'nombre': 'PARNET Ingeniería S.A. de C.V.',
+            'nombre': 'PARNET INGENIERÍA S.A. DE C.V.',
             'descripcion': 'Soluciones Integrales en Telecomunicaciones (Voz y datos), eléctricas que resuelvan las necesidades empresariales con productos, aplicaciones, servicios y tecnología de punta.',
             'telefono': '+52 123 456 7890',
             'email': 'info@parnet.com',
             'direccion': 'Aguascalientes, México',
             'horario': 'Lunes a Viernes: 9:00 AM - 6:00 PM',
-            'redes_sociales': {
-                'facebook': 'https://facebook.com/parnet',
-                'twitter': 'https://twitter.com/parnet',
-                'linkedin': 'https://linkedin.com/company/parnet'
-            }
+            'mision': 'Proporcionar soluciones integrales en telecomunicaciones y energía que satisfagan las necesidades de nuestros clientes con calidad y tecnología de vanguardia.',
+            'vision': 'Ser la empresa líder en soluciones tecnológicas en México, reconocida por nuestra innovación y calidad de servicio.'
         }
 
         return jsonify({'success': True, 'info': info})

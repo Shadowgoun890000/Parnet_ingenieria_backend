@@ -19,8 +19,10 @@ class StatisticsManager:
 
     def __init__(self):
         if not self._initialized:
-            self._initialized = True
-            self._init_stats()
+            with self._lock:
+                if not self._initialized:
+                    self._initialized = True
+                    self._init_stats()
 
     def _init_stats(self):
         """Inicializar las estadísticas"""

@@ -22,8 +22,8 @@ mail = Mail()
 
 def create_app(config_class=config):
     app = Flask(__name__,
-                static_folder='.',  # Sirve archivos desde la raíz
-                static_url_path='')
+                static_folder='static',  # Carpeta para archivos estáticos
+                template_folder='templates')  # Carpeta para templates
     app.config.from_object(config_class)
 
     init_db(app)
@@ -59,21 +59,80 @@ def create_app(config_class=config):
     # ==================== RUTAS DEL FRONTEND ====================
 
     @app.route('/')
-    def serve_index():
+    def index():
         """Servir página principal"""
-        return send_file('index.html')
+        return render_template('index.html')
 
-    @app.route('/<page_name>')
-    def serve_pages(page_name):
-        """Servir páginas HTML del frontend"""
-        valid_pages = [
-            'productos', 'servicios', 'noticias', 'contacto', 'admin',
-            'quienes_somos', 'clientes', 'casos_exito', 'socios', 'soporte'
-        ]
-        if page_name in valid_pages and os.path.exists(f'{page_name}.html'):
-            return send_file(f'{page_name}.html')
-        else:
-            return jsonify({'error': 'Página no encontrada'}), 404
+    @app.route('/admin')
+    def admin():
+        """Página de administración"""
+        return render_template('admin.html')
+
+    @app.route('/contacto')
+    def contacto():
+        """Página de contacto"""
+        return render_template('contacto.html')
+
+    @app.route('/noticias')
+    def noticias():
+        """Página de noticias"""
+        return render_template('noticias.html')
+
+    @app.route('/productos')
+    def productos():
+        """Página de productos"""
+        return render_template('productos.html')
+
+    @app.route('/servicios')
+    def servicios():
+        """Página de servicios"""
+        return render_template('servicios.html')
+
+    @app.route('/quienes_somos')
+    def quienes_somos():
+        """Página quiénes somos"""
+        # Si no existe el template, servir uno básico
+        try:
+            return render_template('quienes_somos.html')
+        except:
+            return render_template('index.html')
+
+    @app.route('/clientes')
+    def clientes():
+        """Página de clientes"""
+        try:
+            return render_template('clientes.html')
+        except:
+            return render_template('index.html')
+
+    @app.route('/casos_exito')
+    def casos_exito():
+        """Página de casos de éxito"""
+        try:
+            return render_template('casos_exito.html')
+        except:
+            return render_template('index.html')
+
+    @app.route('/socios')
+    def socios():
+        """Página de socios"""
+        try:
+            return render_template('socios.html')
+        except:
+            return render_template('index.html')
+
+    @app.route('/soporte')
+    def soporte():
+        """Página de soporte"""
+        try:
+            return render_template('soporte.html')
+        except:
+            return render_template('index.html')
+
+    # Ruta para servir archivos estáticos
+    @app.route('/static/<path:filename>')
+    def serve_static(filename):
+        return send_from_directory(app.static_folder, filename)
 
     # ==================== RUTAS DE LA API ====================
 
@@ -89,21 +148,36 @@ def create_app(config_class=config):
                 'productos': '/api/productos',
                 'servicios': '/api/servicios',
                 'public': '/api/public',
+                'contactos': '/api/contactos',
                 'utils': '/api/utils'
+            },
+            'frontend_routes': {
+                'inicio': '/',
+                'admin': '/admin',
+                'contacto': '/contacto',
+                'noticias': '/noticias',
+                'productos': '/productos',
+                'servicios': '/servicios',
+                'quienes_somos': '/quienes_somos',
+                'clientes': '/clientes',
+                'casos_exito': '/casos_exito',
+                'socios': '/socios',
+                'soporte': '/soporte'
             }
         })
 
     @app.route('/api/stats')
     def get_site_stats():
+        """Obtener estadísticas del sitio"""
         try:
             stats = stats_manager.get_stats()
             return jsonify({'success': True, 'stats': stats})
         except Exception as e:
             return jsonify({'success': False, 'error': str(e)}), 500
 
-    # ... (mantén el resto de tus rutas API igual)
     @app.route('/api/stats/cleanup', methods=['POST'])
     def cleanup_sessions():
+        """Limpiar sesiones expiradas"""
         try:
             cleaned = stats_manager.cleanup_old_sessions(hours=1)
             return jsonify({
@@ -116,6 +190,7 @@ def create_app(config_class=config):
 
     @app.route('/api/utils/test-email', methods=['POST'])
     def test_email():
+        """Probar envío de email"""
         try:
             data = request.get_json() or {}
             to_email = data.get('email')
@@ -129,6 +204,7 @@ def create_app(config_class=config):
 
     @app.route('/api/utils/productos/<int:producto_id>/ficha-pdf', methods=['GET'])
     def generar_ficha_producto_pdf(producto_id):
+        """Generar ficha técnica de producto en PDF"""
         try:
             from DataBase.models.producto import Producto
             producto = Producto.query.get_or_404(producto_id)
@@ -141,6 +217,7 @@ def create_app(config_class=config):
 
     @app.route('/api/utils/productos/reporte-pdf', methods=['GET'])
     def generar_reporte_productos_pdf():
+        """Generar reporte de productos en PDF"""
         try:
             from DataBase.models.producto import Producto
             productos = Producto.query.filter_by(activo=True).all()
@@ -153,6 +230,7 @@ def create_app(config_class=config):
 
     @app.route('/api/utils/sugerencias/reporte-pdf', methods=['GET'])
     def generar_reporte_sugerencias_pdf():
+        """Generar reporte de sugerencias en PDF"""
         try:
             from DataBase.models.contacto import Sugerencia
             sugerencias = Sugerencia.query.all()
@@ -165,6 +243,7 @@ def create_app(config_class=config):
 
     @app.route('/api/utils/config-info')
     def get_config_info():
+        """Obtener información de configuración"""
         try:
             return jsonify({
                 'success': True,
@@ -185,17 +264,23 @@ def create_app(config_class=config):
         except Exception as e:
             return jsonify({'success': False, 'error': str(e)}), 500
 
+    # ==================== MANEJO DE ERRORES ====================
+
     @app.errorhandler(404)
     def not_found(error):
+        """Manejar errores 404"""
         if request.path.startswith('/api/'):
             return jsonify({'error': 'Recurso API no encontrado'}), 404
-        # Para rutas no-API, servir index.html (para SPA)
-        return send_file('index.html')
+        # Para rutas no-API, servir página 404
+        return render_template('404.html'), 404
 
     @app.errorhandler(500)
     def internal_error(error):
+        """Manejar errores 500"""
         db.session.rollback()
-        return jsonify({'error': 'Error interno del servidor'}), 500
+        if request.path.startswith('/api/'):
+            return jsonify({'error': 'Error interno del servidor'}), 500
+        return render_template('500.html'), 500
 
     return app
 
@@ -204,10 +289,30 @@ app = create_app()
 
 if __name__ == '__main__':
     print("🚀 Iniciando Parnet Ingeniería - Sistema Completo")
+    print("✅ Base de datos inicializada correctamente")
+    print(f"✅ Base de datos: {config.MYSQL_DATABASE}")
     print("📧 Email configurado:", "✔️" if config.MAIL_USERNAME else "❌")
     print("📊 Estadísticas activas ✔️")
     print("📄 Generador PDF listo ✔️")
     print("🌐 Frontend disponible en: http://localhost:5000")
     print("🔌 API disponible en: http://localhost:5000/api")
+
+    # Verificar estructura de carpetas
+    templates_path = 'templates'
+    static_path = 'static'
+
+    if os.path.exists(templates_path):
+        templates = [f for f in os.listdir(templates_path) if f.endswith('.html')]
+        print(f"📁 Templates cargados: {len(templates)}")
+        for template in templates:
+            print(f"   📄 {template}")
+    else:
+        print("❌ Carpeta 'templates' no encontrada")
+
+    if os.path.exists(static_path):
+        static_folders = [f for f in os.listdir(static_path) if os.path.isdir(os.path.join(static_path, f))]
+        print(f"📁 Carpetas estáticas: {', '.join(static_folders)}")
+    else:
+        print("❌ Carpeta 'static' no encontrada")
 
     app.run(debug=config.DEBUG, host='0.0.0.0', port=5000)
