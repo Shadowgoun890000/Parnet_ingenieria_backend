@@ -48,8 +48,8 @@
 
 <div class="login-container">
 
-    <!-- Logo (si existe la imagen en assets/img/) -->
-    <img src="../assets/img/logotipo.png" class="logo-parnet" alt="Parnet Ingenieria">
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='assets/img/logotipo.png') }}" class="logo-parnet" alt="Parnet Ingenieria">
 
     <h2 class="login-title">Acceso Administrador</h2>
 
@@ -87,7 +87,7 @@
 </div>
 
 <!-- Script de login -->
-<script src="../assets/js/admin_auth.js"></script>
+<script src="{{ url_for('static', filename='js/admin_auth.js') }}"></script>
 
 </body>
 </html>

@@ -1,6 +1,6 @@
-// assets/js/noticias.js
+// frontend/assets/js/noticias.js - ACTUALIZADO
 
-const API_BASE_URL = 'http://127.0.0.1:5000';
+const API_BASE_URL = '';
 
 // Elementos del DOM
 const newsListEl = document.getElementById('lista-noticias');
@@ -47,9 +47,7 @@ async function cargarNoticias() {
         params.set('page', String(currentPage));
         params.set('per_page', String(perPage));
 
-        const resp = await fetch(
-            `${API_BASE_URL}/api/public/noticias?${params.toString()}`
-        );
+        const resp = await fetch(`/api/public/noticias?${params.toString()}`);
 
         if (!resp.ok) {
             throw new Error('No se pudo obtener el tablero de noticias');
@@ -223,9 +221,7 @@ async function cargarDetalleNoticia(noticiaId) {
         if (newsDetailMetaEl) newsDetailMetaEl.textContent = '';
         if (newsDetailBodyEl) newsDetailBodyEl.innerHTML = '';
 
-        const resp = await fetch(
-            `${API_BASE_URL}/api/public/noticias/${noticiaId}`
-        );
+        const resp = await fetch(`/api/public/noticias/${noticiaId}`);
 
         if (!resp.ok) {
             throw new Error('No se pudo obtener el detalle de la noticia');
@@ -262,7 +258,7 @@ async function cargarDetalleNoticia(noticiaId) {
         }
 
         if (newsDetailBodyEl) {
-            // Si el backend devuelve HTML, lo mostramos tal cual (asumiendo que es seguro en tu contexto académico)
+            // Si el backend devuelve HTML, lo mostramos tal cual
             newsDetailBodyEl.innerHTML = contenido;
         }
     } catch (err) {
@@ -286,9 +282,7 @@ async function cargarNoticiasRecientes() {
         recentNewsListEl.innerHTML =
             '<li class="small text-muted">Cargando...</li>';
 
-        const resp = await fetch(
-            `${API_BASE_URL}/api/public/noticias/recientes?limit=3`
-        );
+        const resp = await fetch(`/api/public/noticias/recientes?limit=3`);
 
         if (!resp.ok) {
             throw new Error('No se pudo obtener las noticias recientes');

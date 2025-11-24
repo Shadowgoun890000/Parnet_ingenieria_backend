@@ -1,6 +1,6 @@
-// assets/js/productos.js
+// assets/js/productos.js - ACTUALIZADO
 
-const API_BASE_URL = 'http://127.0.0.1:5000';
+const API_BASE_URL = '';
 
 // Elementos del DOM
 const productsGridEl = document.getElementById('products-grid');
@@ -62,7 +62,7 @@ async function cargarCategorias() {
     if (!categorySelectEl) return;
 
     try {
-        const resp = await fetch(`${API_BASE_URL}/api/public/categorias`);
+        const resp = await fetch(`/api/public/categorias`);
         if (!resp.ok) {
             throw new Error('No se pudieron obtener las categorías');
         }
@@ -113,9 +113,7 @@ async function cargarProductos(page = 1) {
 
         const qs = buildQuery(params);
 
-        const resp = await fetch(
-            `${API_BASE_URL}/api/public/productos?${qs}`
-        );
+        const resp = await fetch(`/api/public/productos?${qs}`);
 
         if (!resp.ok) {
             throw new Error('No se pudo obtener el catálogo de productos');
@@ -334,9 +332,7 @@ async function cargarProductosDestacados() {
     if (!productsFeaturedEl || !productsFeaturedGridEl) return;
 
     try {
-        const resp = await fetch(
-            `${API_BASE_URL}/api/public/productos/destacados?limit=4`
-        );
+        const resp = await fetch(`/api/public/productos/destacados?limit=4`);
         if (!resp.ok) {
             throw new Error('No se pudieron obtener productos destacados');
         }
@@ -417,7 +413,7 @@ function abrirFichaTecnicaPDF(productId) {
     if (!productId) return;
     // Endpoint ya definido en tu backend en app.py:
     // /api/utils/productos/<int:producto_id>/ficha-pdf
-    const url = `${API_BASE_URL}/api/utils/productos/${productId}/ficha-pdf`;
+    const url = `/api/utils/productos/${productId}/ficha-pdf`;
     window.open(url, '_blank');
 }
 
@@ -425,9 +421,7 @@ async function mostrarDetallesProducto(productId) {
     if (!productId) return;
 
     try {
-        const resp = await fetch(
-            `${API_BASE_URL}/api/public/productos/${productId}`
-        );
+        const resp = await fetch(`/api/public/productos/${productId}`);
 
         if (!resp.ok) {
             throw new Error('No se pudo obtener el detalle del producto');

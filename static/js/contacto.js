@@ -1,6 +1,6 @@
-// assets/js/contacto.js
+// frontend/assets/js/contacto.js - ACTUALIZADO
 
-const API_BASE_URL = 'http://127.0.0.1:5000';
+const API_BASE_URL = '';
 
 // Elementos del DOM
 const contactForm = document.getElementById('contact-form');
@@ -22,7 +22,7 @@ async function enviarFormularioContacto(event) {
         return;
     }
 
-    // Construir payload (ajustaremos nombres si el backend se queja)
+    // Construir payload
     const payload = {
         nombre: contactForm.nombre_contacto.value.trim(),
         email: contactForm.email_contacto.value.trim(),
@@ -32,7 +32,7 @@ async function enviarFormularioContacto(event) {
     };
 
     try {
-        const resp = await fetch(`${API_BASE_URL}/api/contactos/contactos`, {
+        const resp = await fetch(`/api/contactos/contactos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

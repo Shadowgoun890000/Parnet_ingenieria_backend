@@ -1,5 +1,6 @@
-// Ajusta esto si sirves el backend en otra URL/puerto
-const API_BASE_URL = 'http://127.0.0.1:5000';
+// frontend/assets/js/servicios.js - ACTUALIZADO
+
+const API_BASE_URL = '';
 
 // Elementos del DOM
 const servicesListEl = document.getElementById('services-list');
@@ -9,7 +10,7 @@ const serviceFormMessage = document.getElementById('service-form-message');
 
 async function cargarServicios() {
     try {
-        const resp = await fetch(`${API_BASE_URL}/api/public/servicios`);
+        const resp = await fetch(`/api/public/servicios`);
         if (!resp.ok) {
             throw new Error('No se pudo obtener el catálogo de servicios');
         }
@@ -91,18 +92,16 @@ async function enviarSolicitudServicio(event) {
     }
 
     const payload = {
-        // Estos nombres pueden ajustarse a lo que espere tu backend
-        nombre_contacto: serviceForm.nombre_contacto.value.trim(),
-        empresa: serviceForm.empresa.value.trim(),
-        email_contacto: serviceForm.email_contacto.value.trim(),
-        telefono_contacto: serviceForm.telefono_contacto.value.trim(),
         servicio_id: serviceForm.servicio_id.value,
-        area_servicio: serviceForm.area_servicio.value.trim(),
-        detalle: serviceForm.detalle.value.trim()
+        nombre_cliente: serviceForm.nombre_contacto.value.trim(),
+        email: serviceForm.email_contacto.value.trim(),
+        telefono: serviceForm.telefono_contacto.value.trim(),
+        empresa: serviceForm.empresa.value.trim(),
+        mensaje: serviceForm.detalle.value.trim()
     };
 
     try {
-        const resp = await fetch(`${API_BASE_URL}/api/servicios/solicitudes`, {
+        const resp = await fetch(`/api/servicios/solicitudes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -121,7 +120,7 @@ async function enviarSolicitudServicio(event) {
             'Tu solicitud de servicio se ha enviado correctamente. En breve nos pondremos en contacto contigo.';
         serviceFormMessage.classList.add('success');
 
-        // Limpiar formulario (excepto captcha si quieres)
+        // Limpiar formulario
         serviceForm.reset();
 
     } catch (err) {

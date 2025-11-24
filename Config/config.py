@@ -34,9 +34,13 @@ class Config:
     # File Uploads
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
-
-    # CORS Configuration for Angular
-    CORS_ORIGINS = ['http://localhost:4200', 'http://127.0.0.1:4200']
+    # Agrega esto en la clase Config:
+    CORS_ORIGINS = [
+        'http://localhost:5000',  # Mismo puerto del backend
+        'http://127.0.0.1:5000',
+        'http://localhost:3000',  # Por si usas otro puerto
+        'http://127.0.0.1:3000'
+    ]
 
     # Debug
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
