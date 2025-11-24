@@ -35,7 +35,7 @@
             <li><a href="clientes.html">Clientes</a></li>
             <li><a href="servicios.html">Servicios</a></li>
             <li><a href="productos.html" class="active">Productos</a></li>
-            <li><a href="casos_exito.html">Casos de Éxito</a></li>
+            <li><a href="noticias.html">Noticias</a></li>
             <li><a href="contacto.html">Contacto</a></li>
             <li><a href="socios.html">Socios</a></li>
         </ul>
@@ -45,120 +45,109 @@
     <main class="page-wrapper">
         <div class="content-container products-container">
 
-            <!-- COLUMNA IZQUIERDA -->
+            <!-- COLUMNA IZQUIERDA: FILTROS -->
             <aside class="left-column">
 
-                <!-- Categorías -->
-                <section class="box box-categorias">
-                    <h4>Categorías de Productos</h4>
-                    <ul id="lista-categorias" class="areas-list">
-                        <!-- Se llenan desde productos.js -->
-                        <li><span class="small text-muted">Cargando categorías...</span></li>
-                    </ul>
+                <!-- Buscador -->
+                <section class="box">
+                    <h4>Buscar productos</h4>
+                    <div class="mb-2">
+                        <label for="product-search" class="form-label small mb-1">
+                            Nombre, descripción o SKU
+                        </label>
+                        <input type="text"
+                               id="product-search"
+                               class="form-control form-control-sm"
+                               placeholder="Ej. fibra óptica, switch, UPS">
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="product-category" class="form-label small mb-1">
+                            Categoría
+                        </label>
+                        <select id="product-category"
+                                class="form-select form-select-sm">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <label for="product-per-page" class="form-label small mb-1">
+                                Por página
+                            </label>
+                            <select id="product-per-page"
+                                    class="form-select form-select-sm">
+                                <option value="6">6</option>
+                                <option value="9" selected>9</option>
+                                <option value="12">12</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="product-search-btn"
+                            class="btn btn-primary btn-sm w-100">
+                        Buscar
+                    </button>
                 </section>
 
-                <!-- Marcas / Proveedores -->
-                <section class="box box-marcas">
-                    <h4>Marcas y Proveedores</h4>
+                <!-- Descripción general -->
+                <section class="box">
+                    <h4>Catálogo PARNET</h4>
                     <p>
-                        PARNET integra productos de fabricantes líderes en
-                        telecomunicaciones, energía, redes y seguridad para garantizar
-                        soluciones confiables y escalables.
+                        En este catálogo encontrarás soluciones en telecomunicaciones,
+                        energía, redes, seguridad y software, integradas por Parnet
+                        Ingeniería para el sector empresarial.
                     </p>
                 </section>
+
             </aside>
 
-            <!-- COLUMNA CENTRAL -->
-            <section class="center-column">
-                <div class="products-list-column">
+            <!-- COLUMNA CENTRAL: GRID DE PRODUCTOS -->
+            <section class="center-column products-list-column">
 
-                    <!-- Encabezado -->
-                    <div class="products-header">
-                        <h2>Catálogo de Productos</h2>
-                        <p class="products-subtitle">
-                            Busca y filtra productos de Parnet Ingeniería para encontrar
-                            la solución que mejor se adapte a tus necesidades.
-                        </p>
+                <!-- Encabezado -->
+                <div class="products-header">
+                    <h2>Catálogo de Productos</h2>
+                    <p class="small text-muted mb-1">
+                        Utiliza el buscador y los filtros de la izquierda para localizar
+                        rápidamente el producto de tu interés.
+                    </p>
+                    <div id="products-summary" class="small text-muted"></div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="products-toolbar">
+                    <div class="small text-muted" id="products-order-info">
+                        Mostrando productos disponibles
                     </div>
-
-                    <!-- SLIDER DE PRODUCTOS DESTACADOS -->
-                    <section class="products-slider-section">
-                        <div class="products-slider-header">
-                            <h3>Productos Destacados</h3>
-                            <p class="small text-muted">
-                                Algunos de los productos más representativos del catálogo.
-                            </p>
-                        </div>
-
-                        <div class="products-slider-wrapper">
-                            <button type="button"
-                                    class="slider-arrow slider-arrow-left"
-                                    id="slider-prev">
-                                ‹
-                            </button>
-
-                            <div class="products-slider-viewport">
-                                <div id="slider-destacados" class="products-slider-track">
-                                    <!-- Tarjetas destacadas generadas por JS -->
-                                </div>
-                            </div>
-
-                            <button type="button"
-                                    class="slider-arrow slider-arrow-right"
-                                    id="slider-next">
-                                ›
-                            </button>
-                        </div>
-                    </section>
-
-                    <!-- Barra de herramientas -->
-                    <div class="products-toolbar">
-                        <!-- Búsqueda -->
-                        <form id="form-busqueda-productos" class="products-search-form" novalidate>
-                            <input type="text"
-                                   id="busqueda"
-                                   name="busqueda"
-                                   class="form-control form-control-sm"
-                                   placeholder="Buscar por nombre, descripción o SKU...">
-                            <button type="submit"
-                                    class="btn btn-primary btn-sm">
-                                Buscar
-                            </button>
-                            <button type="button"
-                                    id="btn-limpiar-filtros"
-                                    class="btn btn-outline-secondary btn-sm">
-                                Limpiar
-                            </button>
-                        </form>
-
-                        <!-- Reporte PDF -->
-                        <div class="products-report-actions">
-                            <a href="#"
-                               id="link-reporte-productos"
-                               class="btn btn-outline-success btn-sm">
-                                Reporte general (PDF)
-                            </a>
-                        </div>
+                    <div>
+                        <button id="products-refresh-btn"
+                                class="btn btn-outline-secondary btn-sm">
+                            Actualizar listado
+                        </button>
                     </div>
+                </div>
 
-                    <!-- Resumen resultados -->
-                    <div id="resumen-resultados"
-                         class="products-summary small text-muted">
+                <!-- Slider de productos destacados (opcional) -->
+                <div id="products-featured" class="mb-3 d-none">
+                    <h5 class="small mb-2">Productos destacados</h5>
+                    <div class="products-grid" id="products-featured-grid">
                         <!-- Se llena desde productos.js -->
                     </div>
-
-                    <!-- Grid de productos -->
-                    <div id="grid-productos" class="products-grid">
-                        <!-- Tarjetas generadas desde productos.js -->
-                        <p class="small text-muted">Cargando productos...</p>
-                    </div>
-
-                    <!-- Paginación -->
-                    <div id="paginacion-productos" class="products-pagination">
-                        <!-- Botones de página generados desde JS -->
-                    </div>
-
                 </div>
+
+                <!-- Grid de productos -->
+                <div id="products-grid" class="products-grid">
+                    <!-- Se llena desde productos.js -->
+                    <p class="small text-muted">Cargando productos...</p>
+                </div>
+
+                <!-- Paginación -->
+                <div id="products-pagination" class="products-pagination">
+                    <!-- Se llena desde productos.js -->
+                </div>
+
             </section>
         </div>
     </main>
@@ -171,7 +160,7 @@
             <a href="clientes.html">Clientes</a> |
             <a href="servicios.html">Servicios</a> |
             <a href="productos.html">Productos</a> |
-            <a href="casos_exito.html">Casos de Éxito</a> |
+            <a href="noticias.html">Noticias</a> |
             <a href="contacto.html">Contacto</a> |
             <a href="soporte.html">Soporte</a>
         </div>
