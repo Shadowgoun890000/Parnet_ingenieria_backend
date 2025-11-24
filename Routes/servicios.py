@@ -32,21 +32,15 @@ def crear_solicitud_servicio():
                 'error': 'Servicio no encontrado'
             }), 404
 
-        # ✅ CORREGIDO: Usar campos que coinciden con el modelo
+        # ✅ CORREGIDO: Solo usar campos que existen en el modelo
         solicitud = SolicitudServicio(
             servicio_id=data['servicio_id'],
-            nombre_cliente=data['nombre_cliente'],  # ← Campo del modelo
-            email=data['email'],                    # ← Campo del modelo
+            nombre_cliente=data['nombre_cliente'],
+            email=data['email'],
             telefono=data.get('telefono'),
             empresa=data.get('empresa'),
-            mensaje=data['mensaje'],                # ← Campo del modelo
-            estado='pendiente',
-            # Campos de compatibilidad
-            nombre_contacto=data.get('nombre_cliente'),
-            email_contacto=data.get('email'),
-            telefono_contacto=data.get('telefono'),
-            area_servicio=data.get('area_servicio'),
-            detalle=data.get('mensaje')
+            mensaje=data['mensaje'],
+            estado='pendiente'
         )
 
         db.session.add(solicitud)
@@ -96,16 +90,16 @@ def listar_solicitudes_servicios():
         for sol in solicitudes.items:
             servicio_nombre = getattr(sol.servicio, 'nombre', '') if sol.servicio else ''
 
+            # ✅ CORREGIDO: Solo usar campos que existen en el modelo
             solicitudes_data.append({
                 'id': sol.id,
                 'servicio_id': sol.servicio_id,
                 'servicio_nombre': servicio_nombre,
-                'nombre_contacto': sol.nombre_contacto,
-                'email_contacto': sol.email_contacto,
-                'telefono_contacto': sol.telefono_contacto,
+                'nombre_cliente': sol.nombre_cliente,
+                'email': sol.email,
+                'telefono': sol.telefono,
                 'empresa': sol.empresa,
-                'area_servicio': sol.area_servicio,
-                'detalle': sol.detalle,
+                'mensaje': sol.mensaje,
                 'estado': sol.estado,
                 'fecha_creacion': sol.fecha_creacion.isoformat() if sol.fecha_creacion else None
             })
@@ -131,18 +125,18 @@ def obtener_solicitud_servicio(solicitud_id):
 
         servicio_nombre = getattr(solicitud.servicio, 'nombre', '') if solicitud.servicio else ''
 
+        # ✅ CORREGIDO: Solo usar campos que existen en el modelo
         return jsonify({
             'success': True,
             'solicitud': {
                 'id': solicitud.id,
                 'servicio_id': solicitud.servicio_id,
                 'servicio_nombre': servicio_nombre,
-                'nombre_contacto': solicitud.nombre_contacto,
-                'email_contacto': solicitud.email_contacto,
-                'telefono_contacto': solicitud.telefono_contacto,
+                'nombre_cliente': solicitud.nombre_cliente,
+                'email': solicitud.email,
+                'telefono': solicitud.telefono,
                 'empresa': solicitud.empresa,
-                'area_servicio': solicitud.area_servicio,
-                'detalle': solicitud.detalle,
+                'mensaje': solicitud.mensaje,
                 'estado': solicitud.estado,
                 'fecha_creacion': solicitud.fecha_creacion.isoformat() if solicitud.fecha_creacion else None,
                 'fecha_actualizacion': solicitud.fecha_actualizacion.isoformat() if solicitud.fecha_actualizacion else None
@@ -222,11 +216,13 @@ def listar_servicios():
         for serv in servicios:
             servicios_data.append({
                 'id': serv.id,
-                'nombre': getattr(serv, 'nombre', ''),
-                'descripcion': getattr(serv, 'descripcion', ''),
-                'precio_base': float(getattr(serv, 'precio_base', 0)),
-                'categoria': getattr(serv, 'categoria', ''),
-                'activo': getattr(serv, 'activo', True)
+                'nombre': serv.nombre,
+                'descripcion': serv.descripcion,
+                'area': serv.area,
+                'imagen': serv.imagen,
+                'caracteristicas': serv.caracteristicas,
+                'orden': serv.orden,
+                'activo': serv.activo
             })
 
         return jsonify({
@@ -249,11 +245,13 @@ def listar_servicios_admin():
         for serv in servicios:
             servicios_data.append({
                 'id': serv.id,
-                'nombre': getattr(serv, 'nombre', ''),
-                'descripcion': getattr(serv, 'descripcion', ''),
-                'precio_base': float(getattr(serv, 'precio_base', 0)),
-                'categoria': getattr(serv, 'categoria', ''),
-                'activo': getattr(serv, 'activo', True)
+                'nombre': serv.nombre,
+                'descripcion': serv.descripcion,
+                'area': serv.area,
+                'imagen': serv.imagen,
+                'caracteristicas': serv.caracteristicas,
+                'orden': serv.orden,
+                'activo': serv.activo
             })
 
         return jsonify({
@@ -281,8 +279,10 @@ def crear_servicio():
         servicio = Servicio(
             nombre=data['nombre'],
             descripcion=data.get('descripcion', ''),
-            precio_base=data.get('precio_base', 0),
-            categoria=data.get('categoria', 'general'),
+            area=data.get('area', 'telecomunicaciones'),
+            imagen=data.get('imagen'),
+            caracteristicas=data.get('caracteristicas'),
+            orden=data.get('orden', 0),
             activo=data.get('activo', True)
         )
 
@@ -296,8 +296,10 @@ def crear_servicio():
                 'id': servicio.id,
                 'nombre': servicio.nombre,
                 'descripcion': servicio.descripcion,
-                'precio_base': float(servicio.precio_base),
-                'categoria': servicio.categoria,
+                'area': servicio.area,
+                'imagen': servicio.imagen,
+                'caracteristicas': servicio.caracteristicas,
+                'orden': servicio.orden,
                 'activo': servicio.activo
             }
         }), 201
@@ -319,10 +321,14 @@ def actualizar_servicio(servicio_id):
             servicio.nombre = data['nombre']
         if 'descripcion' in data:
             servicio.descripcion = data['descripcion']
-        if 'precio_base' in data:
-            servicio.precio_base = data['precio_base']
-        if 'categoria' in data:
-            servicio.categoria = data['categoria']
+        if 'area' in data:
+            servicio.area = data['area']
+        if 'imagen' in data:
+            servicio.imagen = data['imagen']
+        if 'caracteristicas' in data:
+            servicio.caracteristicas = data['caracteristicas']
+        if 'orden' in data:
+            servicio.orden = data['orden']
         if 'activo' in data:
             servicio.activo = data['activo']
 
@@ -335,8 +341,10 @@ def actualizar_servicio(servicio_id):
                 'id': servicio.id,
                 'nombre': servicio.nombre,
                 'descripcion': servicio.descripcion,
-                'precio_base': float(servicio.precio_base),
-                'categoria': servicio.categoria,
+                'area': servicio.area,
+                'imagen': servicio.imagen,
+                'caracteristicas': servicio.caracteristicas,
+                'orden': servicio.orden,
                 'activo': servicio.activo
             }
         })

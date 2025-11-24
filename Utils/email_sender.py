@@ -148,7 +148,7 @@ class EmailSender:
                 subject=subject,
                 sender=current_app.config['MAIL_USERNAME'],
                 recipients=[current_app.config['MAIL_USERNAME']],
-                reply_to=service_request.email_contacto
+                reply_to=service_request.email
             )
 
             msg.body = f"""
@@ -162,8 +162,8 @@ class EmailSender:
 
             👤 INFORMACIÓN DEL CLIENTE:
             • Nombre: {service_request.nombre_contacto}
-            • Email: {service_request.email_contacto}
-            • Teléfono: {service_request.telefono_contacto or 'No proporcionado'}
+            • Email: {service_request.email}
+            • Teléfono: {service_request.telefono or 'No proporcionado'}
             • Empresa: {service_request.empresa or 'No proporcionada'}
             • Área: {service_request.area_servicio or 'No especificada'}
 
@@ -220,13 +220,13 @@ class EmailSender:
                         <div class="client-card">
                             <h3>👤 Información del Cliente</h3>
                             <div class="field">
-                                <span class="field-label">Nombre:</span> {service_request.nombre_contacto}
+                                <span class="field-label">Nombre:</span> {service_request.nombre_cliente}
                             </div>
                             <div class="field">
-                                <span class="field-label">Email:</span> {service_request.email_contacto}
+                                <span class="field-label">Email:</span> {service_request.email}
                             </div>
                             <div class="field">
-                                <span class="field-label">Teléfono:</span> {service_request.telefono_contacto or 'No proporcionado'}
+                                <span class="field-label">Teléfono:</span> {service_request.telefono or 'No proporcionado'}
                             </div>
                             <div class="field">
                                 <span class="field-label">Empresa:</span> {service_request.empresa or 'No proporcionada'}
