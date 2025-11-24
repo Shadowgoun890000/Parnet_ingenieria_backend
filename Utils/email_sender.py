@@ -148,7 +148,7 @@ class EmailSender:
                 subject=subject,
                 sender=current_app.config['MAIL_USERNAME'],
                 recipients=[current_app.config['MAIL_USERNAME']],
-                reply_to=service_request.email
+                reply_to=service_request.email  # ✅ Campo correcto
             )
 
             msg.body = f"""
@@ -161,14 +161,13 @@ class EmailSender:
             • ID de Servicio: {service.id}
 
             👤 INFORMACIÓN DEL CLIENTE:
-            • Nombre: {service_request.nombre_contacto}
-            • Email: {service_request.email}
-            • Teléfono: {service_request.telefono or 'No proporcionado'}
-            • Empresa: {service_request.empresa or 'No proporcionada'}
-            • Área: {service_request.area_servicio or 'No especificada'}
+            • Nombre: {service_request.nombre_cliente}  # ✅ Corregido
+            • Email: {service_request.email}  # ✅ Campo correcto
+            • Teléfono: {service_request.telefono or 'No proporcionado'}  # ✅ Corregido
+            • Empresa: {service_request.empresa or 'No proporcionada'}  # ✅ Campo correcto
 
             💬 DETALLE DE LA SOLICITUD:
-            {service_request.detalle}
+            {service_request.mensaje}  # ✅ Corregido
 
             📅 INFORMACIÓN DE LA SOLICITUD:
             • Fecha de solicitud: {service_request.fecha_creacion.strftime('%d/%m/%Y %H:%M')}
@@ -220,25 +219,22 @@ class EmailSender:
                         <div class="client-card">
                             <h3>👤 Información del Cliente</h3>
                             <div class="field">
-                                <span class="field-label">Nombre:</span> {service_request.nombre_cliente}
+                                <span class="field-label">Nombre:</span> {service_request.nombre_cliente}  <!-- ✅ Corregido -->
                             </div>
                             <div class="field">
-                                <span class="field-label">Email:</span> {service_request.email}
+                                <span class="field-label">Email:</span> {service_request.email}  <!-- ✅ Campo correcto -->
                             </div>
                             <div class="field">
-                                <span class="field-label">Teléfono:</span> {service_request.telefono or 'No proporcionado'}
+                                <span class="field-label">Teléfono:</span> {service_request.telefono or 'No proporcionado'}  <!-- ✅ Corregido -->
                             </div>
                             <div class="field">
-                                <span class="field-label">Empresa:</span> {service_request.empresa or 'No proporcionada'}
-                            </div>
-                            <div class="field">
-                                <span class="field-label">Área de servicio:</span> {service_request.area_servicio or 'No especificada'}
+                                <span class="field-label">Empresa:</span> {service_request.empresa or 'No proporcionada'}  <!-- ✅ Campo correcto -->
                             </div>
                         </div>
 
                         <div class="detail-card">
                             <h3>💬 Detalle de la Solicitud</h3>
-                            <p>{service_request.detalle.replace(chr(10), '<br>')}</p>
+                            <p>{service_request.mensaje.replace(chr(10), '<br>')}</p>  <!-- ✅ Corregido -->
                         </div>
 
                         <div class="card">
