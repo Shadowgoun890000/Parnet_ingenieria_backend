@@ -28,7 +28,7 @@ def create_app(config_class=config):
     init_db(app)
     jwt.init_app(app)
     mail.init_app(app)
-    CORS(app, origins=config.CORS_ORIGINS)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     email_sender.init_app(app)
 
     app.register_blueprint(auth_bp,      url_prefix='/api/auth')

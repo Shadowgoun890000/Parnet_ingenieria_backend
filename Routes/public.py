@@ -104,20 +104,26 @@ def get_categorias_public():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+# ==================== SERVICIOS PÚBLICOS ====================
+
+# ==================== SERVICIOS PÚBLICOS ====================
+
 @public_bp.route('/servicios', methods=['GET'])
-def get_servicios_public():
-    """Obtener servicios para frontend público"""
+def obtener_servicios_publicos():
+    """Lista pública de servicios para el frontend"""
     try:
-        servicios = Servicio.query.filter_by(activo=True).order_by(
-            Servicio.orden.asc()
-        ).all()
+        servicios = Servicio.query.all()  # si más adelante tienes 'activo', puedes filtrar por eso
 
         return jsonify({
-            'success': True,
-            'servicios': [serv.to_dict() for serv in servicios]
-        })
+            "success": True,
+            "servicios": [s.to_dict() for s in servicios]
+        }), 200
+
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
 @public_bp.route('/clientes', methods=['GET'])

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Parnet Ingeniería S.A. de C.V. - Contacto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap solo para .container y responsivo básico -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <!-- BARRA SUPERIOR -->
+    <div class="top-header">
+        <div class="container text-center">
+            <div class="title-main">PARNET INGENIERIA S.A. DE C.V.</div>
+            <div class="subtitle-main">Telecomunicaciones, Voz, Datos, Fibra Óptica.</div>
+        </div>
+    </div>
+
+    <!-- HEADER GRÁFICO -->
+    <header class="header-graphic">
+        <img src="assets/img/logotipo.png" class="header-logo" alt="Parnet Logo">
+        <img src="assets/img/header_antenas.png" class="header-antenas" alt="Antenas Header">
+    </header>
+
+    <!-- MENÚ PRINCIPAL -->
+    <nav class="main-menu">
+        <ul>
+            <li><a href="index.html">Página Principal</a></li>
+            <li><a href="quienes_somos.html">¿Quiénes Somos?</a></li>
+            <li><a href="clientes.html">Clientes</a></li>
+            <li><a href="servicios.html">Servicios</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="casos_exito.html">Casos de Éxito</a></li>
+            <li><a href="contacto.html" class="active">Contacto</a></li>
+            <li><a href="socios.html">Socios</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="page-wrapper">
+        <div class="content-container">
+
+            <!-- COLUMNA IZQUIERDA -->
+            <aside class="left-column">
+
+                <!-- Datos de contacto -->
+                <section class="box">
+                    <h4>Datos de Contacto</h4>
+                    <p>
+                        <strong>Parnet Ingeniería S.A. de C.V.</strong><br>
+                        Soluciones integrales en telecomunicaciones, energía y software.
+                    </p>
+                    <p>
+                        <strong>Teléfono:</strong><br>
+                        +52 123 456 7890
+                    </p>
+                    <p>
+                        <strong>Correo electrónico:</strong><br>
+                        info@parnet.com
+                    </p>
+                    <p>
+                        <strong>Horario de atención:</strong><br>
+                        Lunes a Viernes: 9:00 a 18:00 hrs.
+                    </p>
+                </section>
+
+                <!-- Ubicación -->
+                <section class="box">
+                    <h4>Ubicación</h4>
+                    <p>
+                        Aguascalientes, México.<br>
+                        Zona corporativa (ubicación demostrativa para fines académicos).
+                    </p>
+                </section>
+            </aside>
+
+            <!-- COLUMNA CENTRAL -->
+            <section class="center-column">
+                <div class="contact-wrapper">
+                    <h2>Contáctanos</h2>
+                    <p class="contact-intro">
+                        Completa el siguiente formulario y uno de nuestros asesores
+                        se pondrá en contacto contigo para brindarte más información
+                        sobre nuestras soluciones en telecomunicaciones, redes, energía
+                        y desarrollo de software.
+                    </p>
+
+                    <form id="contact-form" class="contact-form" novalidate>
+                        <div class="row g-3">
+                            <!-- Nombre -->
+                            <div class="col-md-6">
+                                <label for="nombre_contacto" class="form-label">
+                                    Nombre completo *
+                                </label>
+                                <input type="text"
+                                       class="form-control form-control-sm"
+                                       id="nombre_contacto"
+                                       name="nombre_contacto"
+                                       required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label for="email_contacto" class="form-label">
+                                    Correo electrónico *
+                                </label>
+                                <input type="email"
+                                       class="form-control form-control-sm"
+                                       id="email_contacto"
+                                       name="email_contacto"
+                                       required>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="col-md-6">
+                                <label for="telefono_contacto" class="form-label">
+                                    Teléfono
+                                </label>
+                                <input type="tel"
+                                       class="form-control form-control-sm"
+                                       id="telefono_contacto"
+                                       name="telefono_contacto"
+                                       placeholder="+52 ...">
+                            </div>
+
+                            <!-- Asunto -->
+                            <div class="col-md-6">
+                                <label for="asunto" class="form-label">
+                                    Asunto
+                                </label>
+                                <input type="text"
+                                       class="form-control form-control-sm"
+                                       id="asunto"
+                                       name="asunto"
+                                       placeholder="Cotización, soporte, información, etc.">
+                            </div>
+
+                            <!-- Mensaje -->
+                            <div class="col-12">
+                                <label for="mensaje" class="form-label">
+                                    Mensaje *
+                                </label>
+                                <textarea class="form-control form-control-sm"
+                                          id="mensaje"
+                                          name="mensaje"
+                                          rows="5"
+                                          required></textarea>
+                            </div>
+
+                            <!-- Mensaje de estado -->
+                            <div class="col-12">
+                                <div id="contact-form-message" class="contact-form-message"></div>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="col-12 d-flex justify-content-end gap-2">
+                                <button type="reset" class="btn btn-outline-secondary btn-sm">
+                                    Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    Enviar mensaje
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer text-center">
+        <div class="footer-links">
+            <a href="index.html">Página Principal</a> |
+            <a href="quienes_somos.html">¿Quiénes Somos?</a> |
+            <a href="clientes.html">Clientes</a> |
+            <a href="servicios.html">Servicios</a> |
+            <a href="productos.html">Productos</a> |
+            <a href="casos_exito.html">Casos de Éxito</a> |
+            <a href="contacto.html">Contacto</a> |
+            <a href="soporte.html">Soporte</a>
+        </div>
+        <div class="footer-copy">
+            &copy; 2025 Parnet Ingeniería S.A. de C.V. - Sitio académico
+        </div>
+    </footer>
+
+    <script src="assets/js/contacto.js"></script>
+</body>
+</html>

@@ -12,7 +12,7 @@ servicios_bp = Blueprint('servicios', __name__)
 def crear_solicitud_servicio():
     """Crear nueva solicitud de servicio"""
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
 
         # Validaciones
         required_fields = ['servicio_id', 'nombre_cliente', 'email', 'mensaje']
@@ -36,7 +36,11 @@ def crear_solicitud_servicio():
 
         if solicitud.save():
             # Enviar email de notificación
-            email_sender.send_service_request_email(solicitud, servicio)
+            try:
+                email_sender.send_service_request_email(solicitud, servicio)
+            except Exception:
+                # Si el correo falla, no tiramos toda la API
+                pass
 
             return jsonify({'success': True, 'solicitud': solicitud.to_dict()}), 201
         else:
@@ -44,5 +48,3 @@ def crear_solicitud_servicio():
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-
-# ... (el resto del código se mantiene igual)
