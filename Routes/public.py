@@ -142,6 +142,8 @@ def get_clientes_public():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+# ==================== NOTICIAS PÚBLICAS ====================
+
 @public_bp.route('/noticias', methods=['GET'])
 def get_noticias_public():
     """Obtener noticias para frontend público"""
@@ -149,34 +151,110 @@ def get_noticias_public():
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 6, type=int)
 
-        noticias = Noticia.query.filter_by(activa=True).order_by(
-            Noticia.fecha_publicacion.desc()
-        ).paginate(page=page, per_page=per_page, error_out=False)
+        # Query base: sin asumir campos como 'activa' o 'fecha_publicacion'
+        query = Noticia.query
+
+        # Intentar ordenar por fecha_publicacion si existe, si no, por id
+        try:
+            _ = Noticia.fecha_publicacion  # si no existe, lanza AttributeError
+            query = query.order_by(Noticia.fecha_publicacion.desc())
+        except Exception:
+            query = query.order_by(Noticia.id.desc())
+
+        noticias_pag = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        noticias_data = []
+        for n in noticias_pag.items:
+            noticias_data.append({
+                "id": getattr(n, "id", None),
+                "titulo": (
+                    getattr(n, "titulo", None)
+                    or getattr(n, "titulo_noticia", None)
+                    or ""
+                ),
+                "resumen": (
+                    getattr(n, "resumen", None)
+                    or getattr(n, "descripcion_corta", None)
+                    or getattr(n, "descripcion", None)
+                    or ""
+                ),
+                "contenido": (
+                    getattr(n, "contenido", None)
+                    or getattr(n, "cuerpo", None)
+                    or getattr(n, "detalle", None)
+                    or getattr(n, "descripcion", None)
+                    or ""
+                ),
+                "fecha_publicacion": getattr(n, "fecha_publicacion", None),
+                "visitas": getattr(n, "visitas", 0),
+                "autor": (
+                    getattr(n, "autor", None)
+                    or getattr(n, "creado_por", None)
+                ),
+                # Si existe 'activa', lo usamos; si no, asumimos True
+                "activa": getattr(n, "activa", True),
+            })
 
         return jsonify({
-            'success': True,
-            'noticias': [noticia.to_dict() for noticia in noticias.items],
-            'total': noticias.total,
-            'pages': noticias.pages,
-            'current_page': page
+            "success": True,
+            "noticias": noticias_data,
+            "total": noticias_pag.total,
+            "pages": noticias_pag.pages,
+            "current_page": noticias_pag.page
         })
+
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @public_bp.route('/noticias/<int:noticia_id>', methods=['GET'])
 def get_noticia_public(noticia_id):
     """Obtener noticia específica e incrementar visitas"""
     try:
-        noticia = Noticia.query.filter_by(id=noticia_id, activa=True).first_or_404()
+        # No asumimos 'activa': solo buscamos por id
+        noticia = Noticia.query.filter_by(id=noticia_id).first_or_404()
 
-        # Incrementar contador de visitas
-        noticia.visitas += 1
-        db.session.commit()
+        # Incrementar contador de visitas si el atributo existe
+        try:
+            noticia.visitas = (getattr(noticia, "visitas", 0) or 0) + 1
+            db.session.commit()
+        except Exception:
+            # Si algo falla (no hay columna, etc.), lo ignoramos
+            db.session.rollback()
 
-        return jsonify({'success': True, 'noticia': noticia.to_dict()})
+        noticia_data = {
+            "id": getattr(noticia, "id", None),
+            "titulo": (
+                getattr(noticia, "titulo", None)
+                or getattr(noticia, "titulo_noticia", None)
+                or ""
+            ),
+            "resumen": (
+                getattr(noticia, "resumen", None)
+                or getattr(noticia, "descripcion_corta", None)
+                or getattr(noticia, "descripcion", None)
+                or ""
+            ),
+            "contenido": (
+                getattr(noticia, "contenido", None)
+                or getattr(noticia, "cuerpo", None)
+                or getattr(noticia, "detalle", None)
+                or getattr(noticia, "descripcion", None)
+                or ""
+            ),
+            "fecha_publicacion": getattr(noticia, "fecha_publicacion", None),
+            "visitas": getattr(noticia, "visitas", 0),
+            "autor": (
+                getattr(noticia, "autor", None)
+                or getattr(noticia, "creado_por", None)
+            ),
+            "activa": getattr(noticia, "activa", True),
+        }
+
+        return jsonify({"success": True, "noticia": noticia_data})
+
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @public_bp.route('/noticias/recientes', methods=['GET'])
@@ -185,16 +263,37 @@ def get_noticias_recientes():
     try:
         limit = request.args.get('limit', 3, type=int)
 
-        noticias = Noticia.query.filter_by(activa=True).order_by(
-            Noticia.fecha_publicacion.desc()
-        ).limit(limit).all()
+        query = Noticia.query
+
+        # Intentar ordenar por fecha_publicacion; si no, por id
+        try:
+            _ = Noticia.fecha_publicacion
+            query = query.order_by(Noticia.fecha_publicacion.desc())
+        except Exception:
+            query = query.order_by(Noticia.id.desc())
+
+        noticias = query.limit(limit).all()
+
+        noticias_data = []
+        for n in noticias:
+            noticias_data.append({
+                "id": getattr(n, "id", None),
+                "titulo": (
+                    getattr(n, "titulo", None)
+                    or getattr(n, "titulo_noticia", None)
+                    or ""
+                ),
+                "fecha_publicacion": getattr(n, "fecha_publicacion", None),
+                "visitas": getattr(n, "visitas", 0),
+            })
 
         return jsonify({
-            'success': True,
-            'noticias': [noticia.to_dict() for noticia in noticias]
+            "success": True,
+            "noticias": noticias_data
         })
+
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @public_bp.route('/search', methods=['GET'])
