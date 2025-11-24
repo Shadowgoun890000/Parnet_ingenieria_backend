@@ -679,3 +679,89 @@ body {
     background: #022c52;
     color: #ffffff;
 }
+
+/* ===== CLIENTES ===== */
+
+.clients-header h2 {
+    font-size: 20px;
+    margin-bottom: 6px;
+    color: #004576;
+}
+
+.clients-header p {
+    font-size: 14px;
+    text-align: justify;
+    margin-bottom: 14px;
+}
+
+/* Grid de clientes */
+.clients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 14px;
+    margin-top: 10px;
+}
+
+/* Tarjeta de cliente */
+.client-card {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #c1d8f0;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.client-card__image-wrapper {
+    width: 100%;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    background: #e7f2ff;
+    border-radius: 6px;
+}
+
+.client-card__image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.client-card__name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #003f73;
+}
+
+/* Hover */
+.client-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Nota y errores */
+.clients-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #555;
+    font-style: italic;
+}
+
+.clients-error {
+    font-size: 13px;
+    color: #b30000;
+    margin-top: 8px;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 900px) {
+    .clients-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+}
