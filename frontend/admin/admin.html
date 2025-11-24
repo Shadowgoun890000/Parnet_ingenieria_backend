@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Administrador - PARNET Ingeniería</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap básico -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background: #c5e3ff;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-container {
+            max-width: 420px;
+            margin: 80px auto;
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            border: 1px solid #1b64a3;
+            box-shadow: 0 0 10px #0003;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 22px;
+            color: #003f73;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .logo-parnet {
+            display: block;
+            margin: 0 auto 10px;
+            width: 120px;
+        }
+
+        #admin-login-message {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+
+    <!-- Logo (si existe la imagen en assets/img/) -->
+    <img src="../assets/img/logotipo.png" class="logo-parnet" alt="Parnet Ingenieria">
+
+    <h2 class="login-title">Acceso Administrador</h2>
+
+    <!-- Caja de mensajes -->
+    <div id="admin-login-message" class="alert" role="alert"></div>
+
+    <!-- FORMULARIO LOGIN -->
+    <form id="admin-login-form">
+
+        <div class="mb-3">
+            <label for="admin-email" class="form-label">Correo</label>
+            <input type="email"
+                   id="admin-email"
+                   name="email"
+                   class="form-control"
+                   placeholder="admin@parnet.com"
+                   required>
+        </div>
+
+        <div class="mb-3">
+            <label for="admin-password" class="form-label">Contraseña</label>
+            <input type="password"
+                   id="admin-password"
+                   name="password"
+                   class="form-control"
+                   placeholder="********"
+                   required>
+        </div>
+
+        <button class="btn btn-primary w-100" type="submit">
+            Iniciar sesión
+        </button>
+
+    </form>
+</div>
+
+<!-- Script de login -->
+<script src="../assets/js/admin_auth.js"></script>
+
+</body>
+</html>
